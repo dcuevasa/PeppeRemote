@@ -3,29 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <title>Sinfonia Remote Controller</title>
 </head>
 <body>
     <p>Controla a Pepper!</p>
+    <p>Decir:</p>
     <form id="empty" action="speak/" method="GET">
+        <select name="language" id="lenguaje">
+            <option value="Spanish">Español</option>
+            <option value="English">Ingles</option>
+        </select>
         <input id='palabras' type="text" name="words">
-        <label>Español</label>
-        <input id='español' type="radio" name="language" value="Spanish">
-        <label>Ingles</label>
-        <input id='ingles' type="radio" name="language" value="English">
         <input id='say' type="submit" value="Hablar ">
     </form>
-    <form action="arriba/" method="GET">
-        <input type="submit" value="Arriba">
-    </form>
-    <form action="abajo/" method="GET">
-        <input type="submit" value="Abajo">
-    </form>
-    <form action="izquierda/" method="GET">
-        <input type="submit" value="Izquierda">
-    </form>
-    <form action="derecha/" method="GET">
-        <input type="submit" value="Derecha">
-    </form>
+    <p>Controles tactiles</p>
+    <form id="arriba" action="arriba/" method="GET">
+        <input id="up" type="submit" value="&uarr;"><br>
+    </form><br>
+    <form id="abajo" action="abajo/" method="GET">
+        <input id="down" type="submit" value="&darr;"><br>
+    </form><br>
+    <form id="izquierdo" action="izquierda/" method="GET">
+        <input id="left" type="submit" value="&larr;"><br>
+    </form><br>
+    <form id="derecho" action="derecha/" method="GET">
+        <input id="right" type="submit" value="&rarr;"><br>
+    </form><br>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <script>
+        izquierdo = document.getElementById("izquierdo");
+        derecho = document.getElementById("derecho");
+        arriba = document.getElementById("arriba");
+        abajo = document.getElementById("abajo");
+        window.addEventListener("keydown", checkKeyPressed, false);
+        function checkKeyPressed(evt) {
+            if (evt.keyCode == "65") {
+            izquierdo.submit();
+            }
+            if (evt.keyCode == "68") {
+            derecho.submit();
+            }
+            if (evt.keyCode == "87") {
+            arriba.submit();
+            }
+            if (evt.keyCode == "83") {
+            abajo.submit();
+            }
+        }
+        function holdit(btn, action, start, speedup) {
+        var t;
+
+        var repeat = function () {
+            action();
+            t = setTimeout(repeat, start);
+            start = start / speedup;
+        }
+
+        btn.mousedown = function() {
+            repeat();
+        }
+
+        btn.mouseup = function () {
+            clearTimeout(t);
+        }
+    };
+
+    /* to use */
+    holdit(izquierdo, function () { }, 1, 1);
+    </script>
 </body>
 </html>

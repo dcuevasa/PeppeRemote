@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import rospy
 from django.shortcuts import render, HttpResponse
 from robot_toolkit_msgs.msg import speech_msg, audio_tools_msg
-from robot_toolkit_msgs.srv import audio_tools_srv
+from robot_toolkit_msgs.srv import audio_tools_srv, navigation_tools_srv
 from geometry_msgs.msg import Twist
 
 speed = 0.3
@@ -18,7 +18,12 @@ class RemoteC:
         #Service speech call
         self.audioMessage = audio_tools_msg()
         self.audioMessage.command = "enable_tts"
-        self.audioToolsService(self.audioMessage)
+        #self.audioToolsService(self.audioMessage)
+
+        #Service navigation call
+        self.navigationMessage = navigation_tools_srv()
+        self.navigationMessage.command = "enable_all"
+        #self.navigationToolsService(self.audioMessage)
 
     
     def audioToolsService(self,msg):
@@ -33,26 +38,40 @@ class RemoteC:
         except rospy.ServiceException as e:
             print("Service call failed")
 
+    
+    def navigationToolsService(self,msg):
+        """
+        Enables the navigation Tools service from the toolkit of the robot.
+        """
+        rospy.wait_for_service('/robot_toolkit/navigation_tools_srv')
+        try:
+            navigation = rospy.ServiceProxy('/robot_toolkit/navigation_tools_srv', navigation_tools_srv)
+            navigationService = navigation(msg)
+            print("Audio tools service connected!")
+        except rospy.ServiceException as e:
+            print("Service call failed")
+
 remote = RemoteC()
 # Create your views here.
 def home(request):
     return render(request,"base.html")
 def move(request,direction):
     geometry_msg = Twist()
-    geometry_msg.linear.x = 0;
-    geometry_msg.linear.y = 0;
+    geometry_msg.linear.x = 0
+    geometry_msg.linear.y = 0
     if direction=='up':
-        geometry_msg.linear.x = speed;
+        geometry_msg.linear.x = speed
     if direction=='down':
-        geometry_msg.linear.x = -speed;
+        geometry_msg.linear.x = -speed
     if direction=='left':
-        geometry_msg.linear.y = speed;
+        geometry_msg.linear.y = speed
     if direction=='right':
-        geometry_msg.linear.y = -speed;
-    geometry_msg.linear.z = 0;
-    geometry_msg.angular.x = 0;
-    geometry_msg.angular.y = 0;
-    #geometry_msg.angular.z = angular;
+        geometry_msg.linear.y = -speed
+    geometry_msg.linear.z = 0
+    geometry_msg.angular.x = 0
+    geometry_msg.angular.y = 0
+    geometry_msg.angular.z = 0
+    #geometry_msg.angular.z = angular
     remote.movePublisher.publish(geometry_msg)
     return HttpResponse(status=204)
 def speak(request):
