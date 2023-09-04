@@ -2,7 +2,7 @@
 import os
 import sys
 import rospy
-from robot_toolkit_msgs.msg import speech_msg
+import robot_toolkit_msgs.msg
 
 
 if __name__ == "__main__":
