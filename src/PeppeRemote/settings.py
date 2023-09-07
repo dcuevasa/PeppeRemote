@@ -25,7 +25,7 @@ SECRET_KEY = 'z+262sfsv*q#8o5^e4_5yo&$-%c_et=h2)-sp*z(0v15((70)g'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []#['192.168.0.149','192.168.0.249']
+ALLOWED_HOSTS = ['127.0.0.1','192.168.1.16','192.168.0.249','192.168.0.250']
 
 
 # Application definition
@@ -82,6 +82,9 @@ DATABASES = {
 }
 
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -119,3 +122,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Here you tell django to look for a folder named 'assets'
+]

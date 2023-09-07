@@ -1,12 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
     <title>Sinfonia Remote Controller</title>
 </head>
-<body>
+<body onmouseup="stop()" ontouchend="stop()">
     <p>Controla a Pepper!</p>
     <p>Decir:</p>
     <form id="empty" action="speak/" method="GET">
@@ -15,62 +17,109 @@
             <option value="English">Ingles</option>
         </select>
         <input id='palabras' type="text" name="words">
-        <input id='say' type="submit" value="Hablar ">
     </form>
+    <button id='say' onclick="speak()" value="Hablar">Hablar</button>
     <p>Controles tactiles</p>
-    <form id="arriba" action="arriba/" method="GET">
-        <input id="up" type="submit" value="&uarr;"><br>
-    </form><br>
-    <form id="abajo" action="abajo/" method="GET">
-        <input id="down" type="submit" value="&darr;"><br>
-    </form><br>
-    <form id="izquierdo" action="izquierda/" method="GET">
-        <input id="left" type="submit" value="&larr;"><br>
-    </form><br>
-    <form id="derecho" action="derecha/" method="GET">
-        <input id="right" type="submit" value="&rarr;"><br>
-    </form><br>
+    <button id='up' ontouchstart="move('up')" ontouchend="stop()" onmousedown="move('up')" onmouseup="stop()" onclick="tapMove('up')" value="up">Arriba</button><br>
+
+    <button id='down' ontouchstart="move('down')" ontouchend="stop()" onmousedown="move('down')" onmouseup="stop()" onclick="tapMove('down')" value="down">Abajo</button><br>
+
+    <button id='left' ontouchstart="move('left')" ontouchend="stop()" onmousedown="move('left')" onmouseup="stop()" onclick="tapMove('left')" value="left">Izquierda</button><br>
+
+    <button id='right' ontouchstart="move('right')" ontouchend="stop()" onmousedown="move('right')" onmouseup="stop()" onclick="tapMove('right')" value="Hablar">Derecha</button><br>
+
+    <button id='right' ontouchstart="move('rotateR')" ontouchend="stop()" onmousedown="move('rotateR')" onmouseup="stop()" onclick="tapMove('rotateR')" value="Hablar">GirarD</button><br>
+
+    <button id='right' ontouchstart="move('rotateL')" ontouchend="stop()" onmousedown="move('rotateL')" onmouseup="stop()" onclick="tapMove('rotateL')" value="Hablar">GirarI</button><br>
+
+    <p>Poner imagen</p>
+    <input id='urlImagen' type="text" name="url">
+    <button id='setImage' onclick="display()" value="image">Poner imagen</button>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
     <script>
+        function sleep(milliseconds) {
+            const date = Date.now();
+            let currentDate = null;
+            do {
+                currentDate = Date.now();
+            } 
+            while (currentDate - date < milliseconds);
+            }
+        textbox = document.getElementById("palabras");
         izquierdo = document.getElementById("izquierdo");
         derecho = document.getElementById("derecho");
         arriba = document.getElementById("arriba");
         abajo = document.getElementById("abajo");
         window.addEventListener("keydown", checkKeyPressed, false);
         function checkKeyPressed(evt) {
-            if (evt.keyCode == "65") {
-            izquierdo.submit();
-            }
-            if (evt.keyCode == "68") {
-            derecho.submit();
-            }
-            if (evt.keyCode == "87") {
-            arriba.submit();
-            }
-            if (evt.keyCode == "83") {
-            abajo.submit();
+            if (document.activeElement!=textbox)
+            {
+                if (evt.keyCode == "65") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=left");
+                    peticion.send();
+                }
+                if (evt.keyCode == "68") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=right");
+                    peticion.send();
+                }
+                if (evt.keyCode == "87") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=up");
+                    peticion.send();
+                }
+                if (evt.keyCode == "83") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=down");
+                    peticion.send();            
+                }
+                if (evt.keyCode == "69") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=rotateR");
+                    peticion.send();            
+                }
+                if (evt.keyCode == "81") {
+                    peticion = new XMLHttpRequest();
+                    peticion.open("GET","move/?"+"direction=rotateL");
+                    peticion.send();            
+                }
             }
         }
-        function holdit(btn, action, start, speedup) {
-        var t;
-
-        var repeat = function () {
-            action();
-            t = setTimeout(repeat, start);
-            start = start / speedup;
+        var executer;
+        function move(direction){
+            executer = setInterval(function() {
+                peticion = new XMLHttpRequest();
+                peticion.open("GET","move/?"+"direction="+direction);
+                peticion.send();    
+            }, 500);        
+        }
+        function stop(){
+            clearInterval(executer);
+        }
+        function tapMove(direction){
+            peticion = new XMLHttpRequest();
+            peticion.open("GET","move/?"+"direction="+direction);
+            peticion.send();
         }
 
-        btn.mousedown = function() {
-            repeat();
+
+        function speak(){
+            lenguaje = document.getElementById("lenguaje").value;
+            palabras = textbox.value;
+            peticion = new XMLHttpRequest();
+            peticion.open("GET","speak/?language="+lenguaje+"&words="+palabras);
+            peticion.send();
         }
 
-        btn.mouseup = function () {
-            clearTimeout(t);
+        function display(){
+            url = document.getElementById("urlImagen").value;
+            peticion = new XMLHttpRequest();
+            peticion.open("GET","show_img/?url="+url);
+            peticion.send();
         }
-    };
-
-    /* to use */
-    holdit(izquierdo, function () { }, 1, 1);
     </script>
 </body>
 </html>

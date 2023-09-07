@@ -1,11 +1,9 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from . import views
 
 urlpatterns = [
-    url("arriba/",views.move,{'direction':'up'}, name="arriba"),
-    url("abajo/",views.move,{'direction':'down'}, name="abajo"),
-    url("izquierda/",views.move,{'direction':'left'}, name="izquierda"),
-    url("derecha/",views.move,{'direction':'right'}, name="derecha"),
+    url("move/",views.move, name="move"),
     url("speak/",views.speak, name="speak"),
+    url("show_img/",views.display, name="show_img"),
     url("",views.home, name="home")
 ]
